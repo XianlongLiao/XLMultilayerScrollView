@@ -14,6 +14,8 @@
 		42B868901D26364400DDA8A3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 42B8688E1D26364400DDA8A3 /* LaunchScreen.storyboard */; };
 		42B8689B1D26364400DDA8A3 /* XLMultilayerScrollViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42B8689A1D26364400DDA8A3 /* XLMultilayerScrollViewTests.swift */; };
 		42B868A61D26364400DDA8A3 /* XLMultilayerScrollViewUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42B868A51D26364400DDA8A3 /* XLMultilayerScrollViewUITests.swift */; };
+		42B868B51D2636D500DDA8A3 /* XLMultilayerScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42B868B41D2636D500DDA8A3 /* XLMultilayerScrollView.swift */; };
+		42B868B71D26405300DDA8A3 /* XLSegmentControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42B868B61D26405300DDA8A3 /* XLSegmentControl.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +49,8 @@
 		42B868A11D26364400DDA8A3 /* XLMultilayerScrollViewUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = XLMultilayerScrollViewUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		42B868A51D26364400DDA8A3 /* XLMultilayerScrollViewUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XLMultilayerScrollViewUITests.swift; sourceTree = "<group>"; };
 		42B868A71D26364400DDA8A3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		42B868B41D2636D500DDA8A3 /* XLMultilayerScrollView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XLMultilayerScrollView.swift; sourceTree = "<group>"; };
+		42B868B61D26405300DDA8A3 /* XLSegmentControl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XLSegmentControl.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,6 +101,7 @@
 		42B868841D26364400DDA8A3 /* XLMultilayerScrollView */ = {
 			isa = PBXGroup;
 			children = (
+				42B868B31D26366500DDA8A3 /* XLMultilayerScrollView */,
 				42B868851D26364400DDA8A3 /* AppDelegate.swift */,
 				42B868871D26364400DDA8A3 /* ViewController.swift */,
 				42B868891D26364400DDA8A3 /* Main.storyboard */,
@@ -123,6 +128,15 @@
 				42B868A71D26364400DDA8A3 /* Info.plist */,
 			);
 			path = XLMultilayerScrollViewUITests;
+			sourceTree = "<group>";
+		};
+		42B868B31D26366500DDA8A3 /* XLMultilayerScrollView */ = {
+			isa = PBXGroup;
+			children = (
+				42B868B41D2636D500DDA8A3 /* XLMultilayerScrollView.swift */,
+				42B868B61D26405300DDA8A3 /* XLSegmentControl.swift */,
+			);
+			path = XLMultilayerScrollView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -256,6 +270,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				42B868B51D2636D500DDA8A3 /* XLMultilayerScrollView.swift in Sources */,
+				42B868B71D26405300DDA8A3 /* XLSegmentControl.swift in Sources */,
 				42B868881D26364400DDA8A3 /* ViewController.swift in Sources */,
 				42B868861D26364400DDA8A3 /* AppDelegate.swift in Sources */,
 			);

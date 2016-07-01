@@ -12,6 +12,17 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let sv = XLMultilayerScrollView(frame: self.view.bounds)
+        self.view.addSubview(sv)
+        
+        let headerView = UIView(frame: CGRectMake(0, 0, self.view.frame.width, 180))
+        headerView.backgroundColor = UIColor.redColor()
+        sv.topHeaderView = headerView
+        sv.backgroundColor = UIColor.lightGrayColor()
+        sv.contentSize = CGSizeMake(sv.frame.width, sv.frame.height + headerView.frame.height)
+        sv.segmentItems = ["主页", "组合", "文章", "帖子"]
+        
         // Do any additional setup after loading the view, typically from a nib.
     }
 
