@@ -13,6 +13,16 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        var views: Array<UIView> = Array()
+        let colors = [UIColor.purpleColor(), UIColor.orangeColor(), UIColor.lightGrayColor(), UIColor.brownColor()]
+        for i in 0...3 {
+            let sv = UIScrollView()
+            sv.contentSize = CGSizeMake(0, 1000)
+            sv.backgroundColor = colors[i]
+//            sv.bounces = false
+            views.append(sv)
+        }
+        
         let sv = XLMultilayerScrollView(frame: self.view.bounds)
         self.view.addSubview(sv)
         
@@ -22,7 +32,7 @@ class ViewController: UIViewController {
         sv.backgroundColor = UIColor.lightGrayColor()
         sv.contentSize = CGSizeMake(sv.frame.width, sv.frame.height + headerView.frame.height)
         sv.segmentItems = ["主页", "组合", "文章", "帖子"]
-        
+        sv.itemViews = views
         // Do any additional setup after loading the view, typically from a nib.
     }
 
