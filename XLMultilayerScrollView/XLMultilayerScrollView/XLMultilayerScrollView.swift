@@ -8,8 +8,14 @@
 
 import UIKit
 
+protocol XLMultilayerScrollViewDelegate: class {
+    func didSelectedWithPage(page: Int, currentView: UIView?);
+}
+
 class XLMultilayerScrollView: UIScrollView, UIScrollViewDelegate, XLSegmentControlDelegate {
     
+    weak var selectDelegate: XLMultilayerScrollViewDelegate?
+    var topHeaderViewScroller: Bool = true
     var topHeaderView: UIView? {
         didSet {
             self.setupTopHeaderView()
@@ -30,6 +36,7 @@ class XLMultilayerScrollView: UIScrollView, UIScrollViewDelegate, XLSegmentContr
     }
     
     /// 分段选择器
+    var segmentSuspendOffsetY: CGFloat = 0
     private var segment: XLSegmentControl? = nil
     private var contentCurrentView: UIView? = nil
     /// 左右滑动的SV
@@ -37,16 +44,17 @@ class XLMultilayerScrollView: UIScrollView, UIScrollViewDelegate, XLSegmentContr
         let contentScrollView = UIScrollView(frame: self.bounds)
         contentScrollView.delegate = self
         contentScrollView.bounces = false
+        contentScrollView.backgroundColor = UIColor.whiteColor()
         contentScrollView.pagingEnabled = true
         contentScrollView.showsHorizontalScrollIndicator = false
         contentScrollView.showsVerticalScrollIndicator = false
+        contentScrollView.autoresizesSubviews = false
         return contentScrollView
     }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.initializeMyselfOfConfig()
-        
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -65,9 +73,6 @@ class XLMultilayerScrollView: UIScrollView, UIScrollViewDelegate, XLSegmentContr
         self.alwaysBounceVertical = true
         self.alwaysBounceHorizontal = false
         self.addSubview(contentScrollView)
-        
-        //test coding
-        contentScrollView.backgroundColor = UIColor.blueColor()
     }
     
     /**
@@ -79,11 +84,13 @@ class XLMultilayerScrollView: UIScrollView, UIScrollViewDelegate, XLSegmentContr
         _frame.origin.y = 0
         topHeaderView!.frame = _frame
         self.addSubview(topHeaderView!)
+        self.sendSubviewToBack(topHeaderView!)
         contentScrollView.frame.origin.y = CGRectGetMaxY(_frame)
         if let s = segment {
             s.frame.origin.y = topHeaderView!.frame.height
             contentScrollView.frame.origin.y = CGRectGetMaxY(s.frame)
         }
+        self.contentSize = CGSizeMake(self.bounds.size.width , self.bounds.size.height + topHeaderView!.frame.size.height);
     }
     
     /**
@@ -100,6 +107,7 @@ class XLMultilayerScrollView: UIScrollView, UIScrollViewDelegate, XLSegmentContr
             segment!.frame.origin.y = t.frame.height
         }
         contentScrollView.frame.origin.y = CGRectGetMaxY(segment!.frame)
+        contentScrollView.frame.size.height = self.frame.size.height - self.segment!.frame.height
     }
     
     /**
@@ -108,13 +116,17 @@ class XLMultilayerScrollView: UIScrollView, UIScrollViewDelegate, XLSegmentContr
     private func configItemVies() -> Void {
         var index: Int = 0
         self.itemViews?.forEach({[unowned self] (itemView) in
+            itemView.autoresizesSubviews = false
             itemView.frame = self.contentScrollView.bounds
             itemView.frame.origin.x = CGRectGetWidth(self.contentScrollView.frame) * CGFloat(index)
             self.contentScrollView.addSubview(itemView)
-            if itemView is UIScrollView || itemView is UITableView {
+            if itemView is UITableView {
+                let sv = itemView as! UIScrollView
+                self.panGestureRecognizer.requireGestureRecognizerToFail(sv.panGestureRecognizer)
+            }else if (itemView is UIScrollView) {
                 let sv = itemView as! UIScrollView
                 sv.delegate = self
-                //                self.contentScrollView.panGestureRecognizer.requireGestureRecognizerToFail(sv.panGestureRecognizer)
+                self.panGestureRecognizer.requireGestureRecognizerToFail(sv.panGestureRecognizer)
             }
             index += 1
             })
@@ -128,30 +140,56 @@ class XLMultilayerScrollView: UIScrollView, UIScrollViewDelegate, XLSegmentContr
         if let views = itemViews {
             contentCurrentView = views[idx]
         }
+        if let d = selectDelegate {
+            d.didSelectedWithPage(idx, currentView: contentCurrentView)
+        }
     }
     
     //MARK: UIScrollViewDelegate
+    /**
+     如果这个Subview是UITableView的话，需要从外部调用这个函数
+     */
     func scrollViewDidScroll(scrollView: UIScrollView) {
         if scrollView == contentScrollView {
             segment?.moveItemPointFrom(ContentOffset: scrollView.contentOffset)
         }else if (scrollView == contentCurrentView) {
             if let topView = topHeaderView {
                 if (self.contentOffset.y < CGRectGetHeight(topView.frame) || scrollView.contentOffset.y < 0) {
-                    scrollView.delegate = nil
-                    self.delegate = nil
+                    //                    scrollView.delegate = nil
+                    //                    self.delegate = nil
                     var contentOffsetPoint = self.contentOffset
                     contentOffsetPoint.y = contentOffsetPoint.y + scrollView.contentOffset.y//(scrollView.contentOffset.y < 0 ? scrollView.contentOffset.y / 2 : )
                     scrollView.contentOffset = CGPointZero
                     self.contentOffset = contentOffsetPoint
-                    scrollView.delegate = self
-                    self.delegate = self
+                    //                    scrollView.delegate = self
+                    //                    self.delegate = self
                     if self.contentOffset.y < 0 {
                         self.contentOffset = CGPointZero
                     }
                 }else if (self.contentOffset.y > CGRectGetHeight(topView.frame)) {
-                    self.delegate = nil
+                    //                    self.delegate = nil
                     self.contentOffset = CGPointMake(self.contentOffset.x, CGRectGetHeight(topView.frame))
-                    self.delegate = self
+                    //                    self.delegate = self
+                }
+            }
+        }
+        
+        if topHeaderViewScroller == false {
+            if let headerView = topHeaderView {
+                headerView.frame.origin.y = self.contentOffset.y
+            }
+        }
+        if let s = segment {
+            let h = topHeaderView != nil ? topHeaderView!.frame.height : 0
+            if self.contentOffset.y >= h - segmentSuspendOffsetY {
+                s.frame.origin.y = self.contentOffset.y + segmentSuspendOffsetY
+                if s.enabledBlurEffect == false {
+                    s.enabledBlurEffect = true
+                }
+            }else {
+                s.frame.origin.y  = h
+                if s.enabledBlurEffect == true {
+                    s.enabledBlurEffect = false
                 }
             }
         }
