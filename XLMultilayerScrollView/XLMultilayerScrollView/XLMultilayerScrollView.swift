@@ -61,7 +61,7 @@ class XLMultilayerScrollView: UIScrollView, UIScrollViewDelegate, XLSegmentContr
         self.backgroundColor = UIColor.whiteColor()
         self.showsHorizontalScrollIndicator = false
         self.showsVerticalScrollIndicator = false
-        //        self.bounces = false
+        self.bounces = false
         self.alwaysBounceVertical = true
         self.alwaysBounceHorizontal = false
         self.addSubview(contentScrollView)
@@ -157,23 +157,10 @@ class XLMultilayerScrollView: UIScrollView, UIScrollViewDelegate, XLSegmentContr
         }
     }
     
-//    func scrollViewWillEndDragging(scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
-//        if self.contentOffset.y < -self.contentInset.top {
-//            self.delegate = nil
-//            self.setContentOffset(CGPointMake(0, -self.contentInset.top), animated: true)
-//            self.delegate = nil
-//        }
-//    }
-    
     func scrollViewDidEndDecelerating(scrollView: UIScrollView) {
         if scrollView == contentScrollView {
             let page = Int(scrollView.contentOffset.x / scrollView.frame.width)
             segment?.moveItemPointEndFrom(Page: page)
         }
-//        if self.contentOffset.y < -self.contentInset.top {
-//            self.delegate = nil
-//            self.setContentOffset(CGPointMake(0, -self.contentInset.top), animated: true)
-//            self.delegate = nil
-//        }
     }
 }
