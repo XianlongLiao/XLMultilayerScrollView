@@ -10,7 +10,7 @@ import UIKit
 
 enum AnimationStyle: Int {
     case Liner
-//    case Stretch
+    case Stretch
 }
 
 protocol XLSegmentControlDelegate: class {
@@ -94,6 +94,9 @@ class XLSegmentControl: UIView {
             let b = self.labelItems[self.selectedIndex]
             b.textColor = titleSelectColor
             titleSelectColorComponents = titleSelectColor.rgb()
+            if bottomRedLine != nil {
+                bottomRedLine?.backgroundColor = titleSelectColor
+            }
         }
     }
     
@@ -245,10 +248,9 @@ class XLSegmentControl: UIView {
         
         if animationStyle == .Liner {
             animationLiner()
+        }else if animationStyle == .Stretch {
+            animationStretch()
         }
-//        else if animationStyle == .Stretch {
-//            animationStretch()
-//        }
     }
     
     /**
@@ -274,21 +276,20 @@ class XLSegmentControl: UIView {
             
             if animationStyle == .Liner {
                 self.bottomLineView!.frame.origin.x = offsetX
+            }else if animationStyle == .Stretch {
+                let isLeft = self.isSlideToLeftFrom(ContentOffset: offset)
+                if isLeft {
+                    self.bottomLineView!.frame.size.width = itemWidth + (offsetX - itemWidth * CGFloat(sT))
+                    self.bottomRedLine!.frame.size.width = redLineWidth + (offsetX - itemWidth * CGFloat(sT))
+                    self.bottomLineView!.frame.origin.x = CGFloat(sT) * self.itemWidth
+                    self.bottomRedLine!.frame.origin.x = (self.bottomLineView!.frame.width - self.bottomRedLine!.frame.width) / 2
+                }else {
+                    self.bottomLineView!.frame.origin.x = offsetX
+                    self.bottomLineView!.frame.size.width = (itemWidth + itemWidth * CGFloat(sT + 1)) - offsetX
+                    //                    self.bottomRedLine!.frame.size.width = redLineWidth + (offsetX - itemWidth * CGFloat(sT))
+                    //                    self.bottomRedLine!.frame.origin.x = (self.bottomLineView!.frame.width - self.bottomRedLine!.frame.width) / 2
+                }
             }
-//            else if animationStyle == .Stretch {
-//                let isLeft = self.isSlideToLeftFrom(ContentOffset: offset)
-//                if isLeft {
-//                    self.bottomLineView!.frame.size.width = itemWidth + (offsetX - itemWidth * CGFloat(sT))
-//                    self.bottomRedLine!.frame.size.width = redLineWidth + (offsetX - itemWidth * CGFloat(sT))
-//                    self.bottomLineView!.frame.origin.x = CGFloat(sT) * self.itemWidth
-//                    self.bottomRedLine!.frame.origin.x = (self.bottomLineView!.frame.width - self.bottomRedLine!.frame.width) / 2
-//                }else {
-//                    self.bottomLineView!.frame.origin.x = offsetX
-//                    self.bottomLineView!.frame.size.width = (itemWidth + itemWidth * CGFloat(sT + 1)) - offsetX
-//                    //                    self.bottomRedLine!.frame.size.width = redLineWidth + (offsetX - itemWidth * CGFloat(sT))
-//                    //                    self.bottomRedLine!.frame.origin.x = (self.bottomLineView!.frame.width - self.bottomRedLine!.frame.width) / 2
-//                }
-//            }
         }
     }
     
@@ -297,18 +298,17 @@ class XLSegmentControl: UIView {
         if animationStyle == .Liner {
             self.bottomLineView!.frame.origin.x = CGFloat(self.selectedIndex) * itemWidth
             self.preSelectedIndex = self.selectedIndex
+        }else if animationStyle == .Stretch {
+            UIView.animateWithDuration(0.2, animations: {
+                self.bottomLineView!.frame.size.width = self.itemWidth
+                self.bottomRedLine!.frame.size.width = self.redLineWidth
+                self.bottomLineView!.frame.origin.x = CGFloat(self.selectedIndex) * self.itemWidth
+                self.bottomRedLine!.frame.origin.x = (self.bottomLineView!.frame.width - self.bottomRedLine!.frame.width) / 2
+                
+                }, completion: { (complete) in
+                    self.preSelectedIndex = self.selectedIndex
+            })
         }
-//        else if animationStyle == .Stretch {
-//            UIView.animateWithDuration(0.2, animations: {
-//                self.bottomLineView!.frame.size.width = self.itemWidth
-//                self.bottomRedLine!.frame.size.width = self.redLineWidth
-//                self.bottomLineView!.frame.origin.x = CGFloat(self.selectedIndex) * self.itemWidth
-//                self.bottomRedLine!.frame.origin.x = (self.bottomLineView!.frame.width - self.bottomRedLine!.frame.width) / 2
-//                
-//                }, completion: { (complete) in
-//                    self.preSelectedIndex = self.selectedIndex
-//            })
-//        }
     }
     
     private func changeColorFor(Item label: UILabel, redPercent: Float) -> Void {

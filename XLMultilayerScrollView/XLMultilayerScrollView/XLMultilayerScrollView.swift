@@ -8,13 +8,13 @@
 
 import UIKit
 
-protocol XLMultilayerScrollViewDelegate: class {
-    func didSelectedWithPage(page: Int, currentView: UIView?);
+@objc protocol XLMultilayerScrollViewDelegate: class {
+    @objc func didSelectedWithPage(page: Int, currentView: UIView?);
 }
 
 class XLMultilayerScrollView: UIScrollView, UIScrollViewDelegate, XLSegmentControlDelegate {
     
-    weak var selectDelegate: XLMultilayerScrollViewDelegate?
+    weak var selectDelegate: XLMultilayerScrollViewDelegate? = nil
     var topHeaderViewScroller: Bool = true
     var topHeaderView: UIView? {
         didSet {
@@ -37,7 +37,7 @@ class XLMultilayerScrollView: UIScrollView, UIScrollViewDelegate, XLSegmentContr
     
     /// 分段选择器
     var segmentSuspendOffsetY: CGFloat = 0
-    private var segment: XLSegmentControl? = nil
+    var segment: XLSegmentControl? = nil
     private var contentCurrentView: UIView? = nil
     /// 左右滑动的SV
     private lazy var contentScrollView: UIScrollView = {
@@ -102,6 +102,8 @@ class XLMultilayerScrollView: UIScrollView, UIScrollViewDelegate, XLSegmentContr
         segment!.items = segmentItems!
         segment!.redLineWidth = 60
         segment!.animationStyle = .Liner
+        segment!.titleSelectColor = UIColor.redColor()
+        segment!.titleNormalColor = UIColor.blackColor()
         self.addSubview(segment!)
         if let t = topHeaderView {
             segment!.frame.origin.y = t.frame.height
@@ -155,21 +157,15 @@ class XLMultilayerScrollView: UIScrollView, UIScrollViewDelegate, XLSegmentContr
         }else if (scrollView == contentCurrentView) {
             if let topView = topHeaderView {
                 if (self.contentOffset.y < CGRectGetHeight(topView.frame) || scrollView.contentOffset.y < 0) {
-                    //                    scrollView.delegate = nil
-                    //                    self.delegate = nil
                     var contentOffsetPoint = self.contentOffset
-                    contentOffsetPoint.y = contentOffsetPoint.y + scrollView.contentOffset.y//(scrollView.contentOffset.y < 0 ? scrollView.contentOffset.y / 2 : )
+                    contentOffsetPoint.y = contentOffsetPoint.y + scrollView.contentOffset.y
                     scrollView.contentOffset = CGPointZero
                     self.contentOffset = contentOffsetPoint
-                    //                    scrollView.delegate = self
-                    //                    self.delegate = self
                     if self.contentOffset.y < 0 {
                         self.contentOffset = CGPointZero
                     }
                 }else if (self.contentOffset.y > CGRectGetHeight(topView.frame)) {
-                    //                    self.delegate = nil
                     self.contentOffset = CGPointMake(self.contentOffset.x, CGRectGetHeight(topView.frame))
-                    //                    self.delegate = self
                 }
             }
         }
